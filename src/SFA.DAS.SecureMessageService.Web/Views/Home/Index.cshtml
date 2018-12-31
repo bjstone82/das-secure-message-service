@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    @model IndexViewModel;
+}
+
+<div class="text-center">
+
+    <div class="form-group">
+        @using (Html.BeginForm("SaveMessage", "Messages"))
+        {
+            @Html.Label("Message")
+            @Html.TextAreaFor(m => m.Message, new { @class = "form-control" })
+            @Html.DropDownListFor(m => m.TtlValue.Keys,
+                                        new SelectList(
+                                            Model.TtlValue,
+                                                "Key",
+                                                "Value"))
+            <input type="submit" value="Submit" />
+
+        }
+    </div>
+</div>
+
+
+
