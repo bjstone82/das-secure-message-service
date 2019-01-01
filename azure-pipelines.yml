@@ -2,7 +2,7 @@ trigger:
 - master
 
 pool:
-  name: 'DAS - Continuous Deployment'
+  name: 'Continuous Integration 02 - SSD - 160ACU'
 
 variables:
   buildConfiguration: 'Release'
