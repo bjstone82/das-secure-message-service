@@ -1,6 +1,9 @@
 trigger:
 - master
 
+workspace:
+    clean: all
+
 pool:
   name: 'Continuous Integration 02 - SSD - 160ACU'
 
