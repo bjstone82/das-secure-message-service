@@ -15,7 +15,7 @@ steps:
 - script: |
     dotnet restore
     dotnet build $(solutionPath) --configuration $(buildConfiguration)
-    dotnet publish $(solutionPath) --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+    dotnet publish $(solutionPath) --configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifacts'
