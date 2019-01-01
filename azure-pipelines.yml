@@ -9,6 +9,8 @@ variables:
   solutionPath: '$(Build.SourcesDirectory)\src\SFA.DAS.SecureMessageService.sln'
 
 steps:
+- task: gittools.gitversion.gitversion-task.GitVersion@3
+
 - script: |
     dotnet restore
     dotnet build $(solutionPath) --configuration $(buildConfiguration)
