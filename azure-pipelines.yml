@@ -10,6 +10,7 @@ variables:
 
 steps:
 - task: gittools.gitversion.gitversion-task.GitVersion@3
+  displayName: 'GitVersion'
 
 - script: |
     dotnet restore
@@ -17,3 +18,7 @@ steps:
     dotnet publish $(solutionPath) --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
 
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifacts'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+    ArtifactName: 'Drop'
