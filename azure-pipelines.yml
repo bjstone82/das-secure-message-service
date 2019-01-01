@@ -1,0 +1,17 @@
+trigger:
+- master
+
+pool:
+  name: 'DAS - Continuous Deployment'
+
+variables:
+  buildConfiguration: 'Release'
+  solutionPath: '$(Build.SourcesDirectory)\src\SFA.DAS.SecureMessageService.sln'
+
+steps:
+- script: |
+    dotnet restore
+    dotnet build $(solutionPath) --configuration $(buildConfiguration)
+    dotnet publish $(solutionPath) --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+
+- task: PublishBuildArtifacts@1
