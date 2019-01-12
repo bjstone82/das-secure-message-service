@@ -1,4 +1,4 @@
-FROM microsoft/aspnetcore:2.2
+FROM microsoft/2.2-runtime
 
 # Copy app
 WORKDIR /app
