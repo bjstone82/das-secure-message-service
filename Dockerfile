@@ -1,4 +1,4 @@
-FROM microsoft/2.2-runtime
+FROM microsoft/dotnet:2.2-runtime
 
 # Copy app
 WORKDIR /app
