@@ -1,0 +1,117 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the container group."
+            }
+        },
+        "imageReference": {
+            "type": "string",
+            "metadata": {
+                "description": "The docker image reference in the format: image:tag."
+            }
+        },
+        "redisConnectionString": {
+            "type": "string",
+            "metadata": {
+                "description": "Connection string for the redis cache."
+            }
+        },
+        "environment": {
+            "type": "string",
+            "defaultValue": "Production",
+            "metadata": {
+                "description": "Application environment."
+            }
+        },
+        "acrName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the container registry"
+            }
+        },
+        "acrPassword": {
+            "type": "string",
+            "metadata": {
+                "description": "The password for the container registry"
+            }
+        }
+    },
+    "variables": {
+        "containerName": "sms",
+        "cpuCores": "0.5",
+        "memoryInGb": "0.7"
+    },
+    "resources": [
+        {
+            "name": "[parameters('containerGroupName')]",
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "apiVersion": "2018-10-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [],
+            "properties": {
+                "restartPolicy": "OnFailure",
+                "osType": "Linux",
+                "imageRegistryCredentials": [
+                    {
+                        "server": "[concat(parameters('acrName'), '.azurecr.io')]",
+                        "username": "[parameters('acrName')]",
+                        "password": "[parameters('acrPassword')]"
+                    }
+                ],
+                "containers": [
+                    {
+                        "name": "[variables('containerName')]",
+                        "properties": {
+                            "image": "[parameters('imageReference')]",
+                            "ports": [
+                                {
+                                    "port": "80"
+                                },
+                                {
+                                    "port": "443"
+                                }
+                            ],
+                            "environmentVariables": [
+                                {
+                                    "name": "APPINSIGHTS_INSTRUMETATIONKEY",
+                                    "value": ""
+                                },
+                                {
+                                    "name": "RedisConnectionString",
+                                    "value": "[parameters('redisConnectionString')]"
+                                },
+                                {
+                                    "name": "ASPNETCORE_ENVIRONMENT",
+                                    "value": "[parameters('environment')]"
+                                }
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "cpu": "[variables('cpuCores')]",
+                                    "memoryInGb": "[variables('memoryInGb')]"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "ipAddress": {
+                    "type": "Public",
+                    "ports":[
+                        {
+                            "port": 80,
+                            "protocol":"TCP"
+                        },
+                        {
+                            "port": 443,
+                            "protocol": "TCP"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
