@@ -19,7 +19,7 @@ variables:
 steps:
 
 - script: |
-    dotnet restore
+    dotnet restore $(solutionPath)
     dotnet build $(solutionPath) --configuration $(buildConfiguration)
     dotnet publish $(solutionPath) --configuration $(buildConfiguration) --output $(build.sourcesDirectory)/src/release
   displayName: "Build app"    
