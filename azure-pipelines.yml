@@ -1,27 +1,40 @@
+name: '0.1.0-$(Rev:r)'
 trigger:
-- master
+  batch: true
+  branches:
+    include:
+      - master
 
 workspace:
     clean: all
 
 pool:
-  name: 'Continuous Integration 02 - SSD - 160ACU'
+  vmImage: 'Ubuntu-16.04'
 
 variables:
   buildConfiguration: 'Release'
-  solutionPath: '$(Build.SourcesDirectory)\src\SFA.DAS.SecureMessageService.sln'
+  imageName: "sms:$(build.buildNumber)"
+  solutionPath: '$(build.sourcesDirectory)/src/SFA.DAS.SecureMessageService.sln'
 
 steps:
-- task: gittools.gitversion.gitversion-task.GitVersion@3
-  displayName: 'GitVersion'
 
 - script: |
     dotnet restore
     dotnet build $(solutionPath) --configuration $(buildConfiguration)
-    dotnet publish $(solutionPath) --configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)
+    dotnet publish $(solutionPath) --configuration $(buildConfiguration) --output $(build.sourcesDirectory)/src/release
+  displayName: "Build app"    
+
+- script: |
+    docker build -f Dockerfile -t $(acrName).azurecr.io/$(imageName) .
+    docker login -u $(acrName) -p $password $(acrName).azurecr.io
+    docker push $(acrName).azurecr.io/$(imageName)
+  displayName: "Build image"
+  env:
+    password: $(acrPassword)
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifacts'
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)'
     ArtifactName: 'Drop'
+  enabled: false
