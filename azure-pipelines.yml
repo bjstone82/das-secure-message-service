@@ -32,9 +32,15 @@ steps:
   env:
     password: $(acrPassword)
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifacts'
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
   inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)'
-    ArtifactName: 'Drop'
-  enabled: false
+    Contents: |
+     azure/**
+    TargetFolder: '$(build.artifactstagingdirectory)/publish'
+    OverWrite: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)/publish'
