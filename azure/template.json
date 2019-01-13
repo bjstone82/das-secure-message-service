@@ -41,6 +41,7 @@
         }
     },
     "variables": {
+        "acrServer": "[concat(parameters('acrName'), '.azurecr.io')]",
         "containerName": "sms",
         "cpuCores": "0.5",
         "memoryInGb": "0.7"
@@ -51,13 +52,15 @@
             "type": "Microsoft.ContainerInstance/containerGroups",
             "apiVersion": "2018-10-01",
             "location": "[resourceGroup().location]",
-            "dependsOn": [],
+            "dependsOn": [
+                "AppInsights"
+            ],
             "properties": {
                 "restartPolicy": "OnFailure",
                 "osType": "Linux",
                 "imageRegistryCredentials": [
                     {
-                        "server": "[concat(parameters('acrName'), '.azurecr.io')]",
+                        "server": "[variables('acrServer')]",
                         "username": "[parameters('acrName')]",
                         "password": "[parameters('acrPassword')]"
                     }
@@ -66,7 +69,7 @@
                     {
                         "name": "[variables('containerName')]",
                         "properties": {
-                            "image": "[parameters('imageReference')]",
+                            "image": "[concat(variables('acrServer'), '/' , parameters('imageReference'))]",
                             "ports": [
                                 {
                                     "port": "80"
@@ -78,7 +81,7 @@
                             "environmentVariables": [
                                 {
                                     "name": "APPINSIGHTS_INSTRUMETATIONKEY",
-                                    "value": ""
+                                    "value": "[reference('AppInsights').outputs.InstrumentationKey.value]"
                                 },
                                 {
                                     "name": "RedisConnectionString",
@@ -100,6 +103,7 @@
                 ],
                 "ipAddress": {
                     "type": "Public",
+                    "dnsNameLabel": "[parameters('containerGroupName')]",
                     "ports":[
                         {
                             "port": 80,
@@ -110,6 +114,26 @@
                             "protocol": "TCP"
                         }
                     ]
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "AppInsights",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/SkillsFundingAgency/tl-platform-building-blocks/master/templates/application-insights.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appInsightsName": {
+                        "value": "[parameters('containerGroupName')]"
+                    },
+                    "attachedService": {
+                        "value": "[parameters('containerGroupName')]"
+                    }
                 }
             }
         }
