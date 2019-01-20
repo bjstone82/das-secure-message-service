@@ -17,11 +17,27 @@ variables:
 
 steps:
 
-- script: |
-    dotnet restore $(solutionPath)
-    dotnet build $(solutionPath) --configuration $(buildConfiguration)
-    dotnet publish $(solutionPath) --configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)/publish
-  displayName: "Build app"    
+- task: DotNetCoreCLI@2
+  displayName: Restore
+  inputs:
+    command: restore
+    projects: $(solutionPath))
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    command: build
+    projects: $(solutionPath)
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish'
+  inputs:
+    command: publish
+    publishWebProjects: true
+    projects: $(solutionPath))
+    arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)/publish'  
 
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
