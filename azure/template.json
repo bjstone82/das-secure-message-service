@@ -98,7 +98,7 @@
                                     "value": "[parameters('environment')]"
                                 },
                                 {
-                                    "name": "cdn:url",
+                                    "name": "cdn_url",
                                     "value": "[parameters('cdnUrl')]"
                                 }
                             ],
