@@ -3,23 +3,27 @@
     @model IndexViewModel;
 }
 
-<div class="text-center">
 
-    <div class="form-group">
-        @using (Html.BeginForm("SaveMessage", "Messages"))
-        {
-            @Html.Label("Message")
-            @Html.TextAreaFor(m => m.Message, new { @class = "form-control" })
-            @Html.DropDownListFor(m => m.TtlValue.Keys,
-                                        new SelectList(
-                                            Model.TtlValue,
-                                                "Key",
-                                                "Value"))
-            <input type="submit" value="Submit" />
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
+            Create a message
+        </h1>
 
-        }
+        <div class="govuk-form-group">
+            @using (Html.BeginForm("SaveMessage", "Messages",  FormMethod.Post, new { @class = "govuk-form-group" } ))
+            {
+                @Html.Label("Message",null, new { @class = "govuk-visually-hidden"} )
+                @Html.TextAreaFor(m => m.Message, new { @class="govuk-textarea", @rows="10", @cols="50", @autofocus="true", required="true", autocomplete="off" })
+                @Html.DropDownListFor(m => m.TtlValue.Keys,
+                                            new SelectList(Model.TtlValue,"Key","Value"),
+                                            new { @class = "govuk-select" })
+
+                <button type="submit" id="submit" class="govuk-button">
+                    Generate URL
+                </button>
+            }
+        </div>
+
     </div>
 </div>
-
-
-

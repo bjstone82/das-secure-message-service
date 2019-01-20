@@ -1,10 +1,23 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
     @model ViewMessageViewModel;
 }
 
-<div class="text-center">
-    Message: @Model.Message
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Your message</h1>
+
+            <p class="govuk-body">The message has now been permanently deleted. Save the text below to a secure location.</p>
+            <div class="govuk-form-group">
+                <textarea class="govuk-textarea" rows="10" cols="50" id="message-text" name="message-text" readonly="readonly">  @Model.Message </textarea>
+            </div>
+
+            <button type="button" class="govuk-button" id="copy-clipboard-btn" data-clipboard-target="#message-text"
+                data-placement='bottom'>Copy to clipboard
+            </button>
+
+    </div>
 </div>
 
-
+<script type="text/javascript" src="@Url.Content("~/js/clipboard.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/snappass_clipboard_button.js")"></script>

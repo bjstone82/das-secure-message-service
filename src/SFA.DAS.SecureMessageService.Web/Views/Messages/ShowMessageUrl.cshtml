@@ -1,8 +1,21 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
     @model ShowMessageUrlViewModel;
 }
 
-<div class="text-center">
-    Message Url: @Model.Url
+<h1 class="govuk-heading-xl">Share your message</h1>
+
+<div class="das-notification das-notification--success" tabindex="-1">
+    <p class="das-notification__body">The message has been temporarily saved. Send the following URL to your intended recipient.</p>
 </div>
+
+<div class="govuk-form-group">
+    <input type="text" class="govuk-input" id="message-link" value= @Model.Url readonly="readonly">
+</div>
+
+<button type="button" class="govuk-button" id="copy-clipboard-btn" data-clipboard-target="#message-link" data-placement='bottom'>
+    Copy to clipboard
+</button>
+
+<script type="text/javascript" src="@Url.Content("js/clipboard.min.js")"> asp-fallback-src="~/js/clipboard.min.js" asp-fallback-test="window.jQuery"</script>
+<script type="text/javascript" src="@Url.Content("js/snappass_clipboard_button.js")"> asp-fallback-src="~/js/snappass_clipboard_button.js"</script>
