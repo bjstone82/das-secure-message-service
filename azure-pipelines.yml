@@ -21,7 +21,7 @@ steps:
   displayName: Restore
   inputs:
     command: restore
-    projects: $(solutionPath))
+    projects: $(solutionPath)
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
@@ -36,7 +36,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: true
-    projects: $(solutionPath))
+    projects: $(solutionPath)
     arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)/publish'  
 
 - task: CopyFiles@2
