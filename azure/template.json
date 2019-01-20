@@ -38,6 +38,12 @@
             "metadata": {
                 "description": "The password for the container registry"
             }
+        },
+        "cdnUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "The url of the cdn used to serve static content"
+            }
         }
     },
     "variables": {
@@ -90,6 +96,10 @@
                                 {
                                     "name": "ASPNETCORE_ENVIRONMENT",
                                     "value": "[parameters('environment')]"
+                                },
+                                {
+                                    "name": "cdn:url",
+                                    "value": "[parameters('cdnUrl')]"
                                 }
                             ],
                             "resources": {
