@@ -16,7 +16,6 @@ variables:
   solutionPath: '$(build.sourcesDirectory)/src/SFA.DAS.SecureMessageService.sln'
 
 steps:
-
 - task: DotNetCoreCLI@2
   displayName: Restore
   inputs:
