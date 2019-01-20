@@ -5,12 +5,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.SecureMessageService.Web.Models;
 
 namespace SFA.DAS.SecureMessageService.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ILogger logger;
+
+        public HomeController(ILogger<HomeController> _logger)
+        {
+            logger = _logger;
+        }
 
         [HttpGet]
         public IActionResult Index()
@@ -24,6 +31,5 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
     }
 }
