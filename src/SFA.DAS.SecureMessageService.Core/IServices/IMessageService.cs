@@ -7,5 +7,7 @@ namespace SFA.DAS.SecureMessageService.Core.IServices
         Task<string> Create(string message, int ttl);
 
         Task<string> Retrieve(string key);
+
+        Task<bool> MessageExists(string key);
     }
 }

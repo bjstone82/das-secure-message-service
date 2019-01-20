@@ -42,8 +42,14 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
         [HttpGet("messages/{key}")]
         public async Task<IActionResult> ViewMessage(string key)
         {
-            // Retrieve the protected message from the cache
-            var message = await messageService.Retrieve(key);
+
+            var message = "";
+            var messageExists = await messageService.MessageExists(key);
+
+            if (messageExists){
+                // Retrieve the protected message from the cache
+                message = await messageService.Retrieve(key);
+            }
 
             var viewMessageViewModel = new ViewMessageViewModel()  {Message = message };
             return View(viewMessageViewModel);
