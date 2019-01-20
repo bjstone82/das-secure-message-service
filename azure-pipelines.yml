@@ -13,7 +13,6 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  imageName: "sms:$(build.buildNumber)"
   solutionPath: '$(build.sourcesDirectory)/src/SFA.DAS.SecureMessageService.sln'
 
 steps:
@@ -21,16 +20,8 @@ steps:
 - script: |
     dotnet restore $(solutionPath)
     dotnet build $(solutionPath) --configuration $(buildConfiguration)
-    dotnet publish $(solutionPath) --configuration $(buildConfiguration) --output $(build.sourcesDirectory)/src/release
+    dotnet publish $(solutionPath) --configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)/publish
   displayName: "Build app"    
-
-- script: |
-    docker build -f Dockerfile -t $(acrName).azurecr.io/$(imageName) .
-    docker login -u $(acrName) -p $password $(acrName).azurecr.io
-    docker push $(acrName).azurecr.io/$(imageName)
-  displayName: "Build image"
-  env:
-    password: $(acrPassword)
 
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'

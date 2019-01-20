@@ -2,16 +2,22 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "containerGroupName": {
+        "appServiceName": {
             "type": "string",
             "metadata": {
-                "description": "The name of the container group."
+                "description": "The name of the app service."
             }
         },
-        "imageReference": {
+        "appServicePlanName": {
             "type": "string",
             "metadata": {
-                "description": "The docker image reference in the format: image:tag."
+                "description": "The name of the app service plan."
+            }
+        },
+        "redisCacheName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the redis cache."
             }
         },
         "redisConnectionString": {
@@ -20,110 +26,118 @@
                 "description": "Connection string for the redis cache."
             }
         },
-        "environment": {
-            "type": "string",
-            "defaultValue": "Production",
-            "metadata": {
-                "description": "Application environment."
-            }
-        },
-        "acrName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the container registry"
-            }
-        },
-        "acrPassword": {
-            "type": "string",
-            "metadata": {
-                "description": "The password for the container registry"
-            }
-        },
         "cdnUrl": {
             "type": "string",
             "metadata": {
-                "description": "The url of the cdn used to serve static content"
+                "description": "The url of the cdn used to serve static content."
             }
         }
     },
     "variables": {
-        "acrServer": "[concat(parameters('acrName'), '.azurecr.io')]",
-        "containerName": "sms",
-        "cpuCores": "0.5",
-        "memoryInGb": "0.7"
+        "appServicePlanTier": "Standard",
+        "appServicePlanSize": "1",
+        "appServicePlanInstances": 1,
+        "redisCacheSKU": "Basic",
+        "redisCacheFamily": "C",
+        "redisCacheCapacity": 0
     },
     "resources": [
         {
-            "name": "[parameters('containerGroupName')]",
-            "type": "Microsoft.ContainerInstance/containerGroups",
-            "apiVersion": "2018-10-01",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "AppInsights"
-            ],
+            "apiVersion": "2017-05-10",
+            "name": "AppServicePlan",
+            "type": "Microsoft.Resources/deployments",
             "properties": {
-                "restartPolicy": "OnFailure",
-                "osType": "Linux",
-                "imageRegistryCredentials": [
-                    {
-                        "server": "[variables('acrServer')]",
-                        "username": "[parameters('acrName')]",
-                        "password": "[parameters('acrPassword')]"
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/app-service-plan.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appServicePlanName": {
+                        "value": "[parameters('appServicePlanName')]"
+                    },
+                    "nonASETier": {
+                        "value": "[variables('appServicePlanTier')]"
+                    },
+                    "aspSize": {
+                        "value": "[variables('appServicePlanSize')]"
+                    },
+                    "aspInstances": {
+                        "value": "[variables('appServicePlanInstances')]"
                     }
-                ],
-                "containers": [
-                    {
-                        "name": "[variables('containerName')]",
-                        "properties": {
-                            "image": "[concat(variables('acrServer'), '/' , parameters('imageReference'))]",
-                            "ports": [
-                                {
-                                    "port": "80"
-                                },
-                                {
-                                    "port": "443"
-                                }
-                            ],
-                            "environmentVariables": [
-                                {
-                                    "name": "APPINSIGHTS_INSTRUMETATIONKEY",
-                                    "value": "[reference('AppInsights').outputs.InstrumentationKey.value]"
-                                },
-                                {
-                                    "name": "RedisConnectionString",
-                                    "value": "[parameters('redisConnectionString')]"
-                                },
-                                {
-                                    "name": "ASPNETCORE_ENVIRONMENT",
-                                    "value": "[parameters('environment')]"
-                                },
-                                {
-                                    "name": "cdn__url",
-                                    "value": "[parameters('cdnUrl')]"
-                                }
-                            ],
-                            "resources": {
-                                "requests": {
-                                    "cpu": "[variables('cpuCores')]",
-                                    "memoryInGb": "[variables('memoryInGb')]"
-                                }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "AppService",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/SkillsFundingAgency/tl-platform-building-blocks/master/templates/app-service.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appServiceName": {
+                        "value": "[parameters('appServiceName')]"
+                    },
+                    "appServicePlanName": {
+                        "value": "[parameters('appServicePlanName')]"
+                    },
+                    "appServicePlanResourceGroup": {
+                        "value": "[resourceGroup().name]"
+                    },
+                    "appServiceAppSettings": {
+                        "value": [
+                            {
+                                "name": "APPINSIGHTS_INSTRUMETATIONKEY",
+                                "value": "[reference('AppInsights').outputs.InstrumentationKey.value]"
+                            },
+                            {
+                                "name": "RedisConnectionString",
+                                "value": "[parameters('redisConnectionString')]"
+                            },
+                            {
+                                "name": "cdn:url",
+                                "value": "[parameters('cdnUrl')]"
                             }
-                        }
+
+                        ]
                     }
-                ],
-                "ipAddress": {
-                    "type": "Public",
-                    "dnsNameLabel": "[parameters('containerGroupName')]",
-                    "ports":[
-                        {
-                            "port": 80,
-                            "protocol":"TCP"
-                        },
-                        {
-                            "port": 443,
-                            "protocol": "TCP"
-                        }
-                    ]
+                }
+            },
+            "dependsOn": [
+                "AppServicePlan"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "redis",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/redis.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "redisCacheName": {
+                        "value": "[parameters('redisCacheName')]"
+                    },
+                    "redisCacheSKU": {
+                        "value": "[variables('redisCacheSKU')]"
+                    },
+                    "redisCacheFamily": {
+                        "value": "[variables('redisCacheFamily')]"
+                    },
+                    "redisCacheCapacity": {
+                        "value": "[variables('redisCacheCapacity')]"
+                    },
+                    "enableNonSslPort": {
+                        "value": false
+                    }
+
                 }
             }
         },
@@ -134,15 +148,15 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/SkillsFundingAgency/tl-platform-building-blocks/master/templates/application-insights.json",
+                    "uri": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/application-insights.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
                     "appInsightsName": {
-                        "value": "[parameters('containerGroupName')]"
+                        "value": "[parameters('appServiceName')]"
                     },
                     "attachedService": {
-                        "value": "[parameters('containerGroupName')]"
+                        "value": "[parameters('appServiceName')]"
                     }
                 }
             }
