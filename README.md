@@ -8,12 +8,11 @@ Inspired by snappass, the secure messaging service is a safe way to send one tim
 ```PowerShell
 $ResourceGroupName = ""
 $DeploymentParameters = @{
-    ACRName = ""
-    ACRPassword = ""
-    ContainerGroupName = ""
-    ImageReference = ""
+    AppServiceName = ""
+    AppServicePlanName = ""
+    RedisCacheName = ""
     RedisConnectionString = ""
-
+    CdnUrl = ""
 }
 
 New-AzureRmResourceGroupDeployment -Name Deploy01 -ResourceGroupName $ResourceGroupName -TemplateFile .\azure\template.json @DeploymentParameters
