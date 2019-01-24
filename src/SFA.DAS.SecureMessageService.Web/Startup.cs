@@ -42,17 +42,24 @@ namespace SFA.DAS.SecureMessageService.Web
 
             try
             {
-                var redisConnectionString = Configuration["RedisConnectionString"];
-
-                services.AddDistributedRedisCache(options =>
+                if (_env.IsDevelopment())
                 {
-                    options.Configuration = $"{redisConnectionString},DefaultDatabase=1";
-                });
+                    services.AddDistributedMemoryCache();
+                }
+                else
+                {
+                    var redisConnectionString = Configuration["RedisConnectionString"];
 
-                var redis = ConnectionMultiplexer.Connect($"{redisConnectionString},DefaultDatabase=0");
-                services.AddDataProtection()
-                    .SetApplicationName("das-sms-svc-web")
-                    .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
+                    services.AddStackExchangeRedisCache(options =>
+                    {
+                        options.Configuration = $"{redisConnectionString},DefaultDatabase=1";
+                    });
+
+                    var redis = ConnectionMultiplexer.Connect($"{redisConnectionString},DefaultDatabase=0");
+                    services.AddDataProtection()
+                        .SetApplicationName("das-sms-svc-web")
+                        .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
+                }
             }
             catch (Exception e)
             {
