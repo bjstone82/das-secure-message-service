@@ -15,11 +15,14 @@ namespace SFA.DAS.SecureMessageService.Core.Services
         private readonly IProtectionRepository protectionRepository;
         private readonly ICacheRepository cacheRepository;
 
-        public MessageService(IProtectionRepository _protectionRepository, IOptions<SharedConfig> _config, ICacheRepository _cacheRepository)
+        private readonly IAuditRepository auditRepository;
+
+        public MessageService(IProtectionRepository _protectionRepository, IOptions<SharedConfig> _config, ICacheRepository _cacheRepository, IAuditRepository _auditRepository)
         {
             protectionRepository = _protectionRepository;
             config = _config.Value;
             cacheRepository = _cacheRepository;
+            auditRepository = _auditRepository;
         }
 
         public async Task<string> Create(string message, int ttl)
@@ -34,6 +37,9 @@ namespace SFA.DAS.SecureMessageService.Core.Services
 
                 // Save string to cache
                 await cacheRepository.SaveAsync(key, protectedMessage, ttl);
+
+                // Audit message creation
+                await auditRepository.AuditMessageCreation(key);
 
                 // Return token to be used in uri
                 return key;
@@ -68,6 +74,9 @@ namespace SFA.DAS.SecureMessageService.Core.Services
 
                 // Encrypt string
                 var unprotectedMessage = await protectionRepository.Unprotect(protectedMessage);
+
+                // Audit message retrievals
+                await auditRepository.AuditMessageRetrieval(key);
 
                 // Return the unprotected message
                 return unprotectedMessage;

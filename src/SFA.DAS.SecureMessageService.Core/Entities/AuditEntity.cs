@@ -2,25 +2,32 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace SFA.DAS.SecureMessageService.Core.Entities
 {
-    public class CreateAuditEntity : TableEntity
+
+    public class AuditEntity : TableEntity
     {
-        public CreateAuditEntity(string key)
+        public AuditEntity()
         {
-            this.PartitionKey = "sms";
-            this.RowKey = "Create";
-            this.Key = key;
+            this.PartitionKey = "SMS";
         }
+
         public string Key { get; set; }
     }
 
-    public class RetrieveAuditEntity : TableEntity
+    public class CreateAuditEntity : AuditEntity
+    {
+        public CreateAuditEntity(string key)
+        {
+            this.RowKey = "MessageCreated";
+            this.Key = key;
+        }
+    }
+
+    public class RetrieveAuditEntity : AuditEntity
     {
         public RetrieveAuditEntity(string key)
         {
-            this.PartitionKey = "sms";
-            this.RowKey = "Retrieve";
+            this.RowKey = "MessageRetrieved";
             this.Key = key;
         }
-        public string Key { get; set; }
     }
 }
