@@ -23,7 +23,7 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
         public IActionResult Index()
         {
             var indexViewModel = new IndexViewModel();
-            return View(indexViewModel);
+            return View("Index", indexViewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
