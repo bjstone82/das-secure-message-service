@@ -39,21 +39,17 @@ steps:
   inputs:
     command: test
     projects: '**/*.UnitTests.csproj'
-    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
+    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
 
-- task: DotNetCoreCLI@2
-  displayName: ReportGenerator
-  inputs:
-    command: custom
-    custom: reportgenerator
-    projects: '**/*.UnitTests.csproj'
-    arguments: '-reports:$(Build.SourcesDirectory)/TestResults/Coverage/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/TestResults/Coverage/Reports -tag:$(Build.BuildNumber) -reportTypes:htmlInline'
+- script: |
+    dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.0.9
+    reportgenerator "-reports:$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml" "-targetdir:$(build.artifactstagingdirectory)/reports" -reporttypes:HTMLInline
 
 - task: PublishCodeCoverageResults@1
   inputs:
     codeCoverageTool: 'cobertura'
-    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/Coverage/coverage.cobertura.xml'
-    reportDirectory: '$(Build.SourcesDirectory)/TestResults/Coverage/Reports'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml'
+    reportDirectory: '$(build.artifactstagingdirectory)/reports'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish'
