@@ -27,11 +27,15 @@
     </header>
     <div class="govuk-width-container">
         <main class="govuk-main-wrapper " id="main-content" role="main">
+
+            <div class="das-notification das-notification--warning" tabindex="-1">
+                <h3 class="govuk-heading-m">WARNING</h3>
+                <p class="das-notification__body">This tool is for development purposes only.</p>
+            </div>
+
             @RenderBody()
         </main>
     </div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
 </body>
 
