@@ -42,8 +42,8 @@ steps:
     arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
 
 - pwsh: |
-    dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.0.9
-    reportgenerator "-reports:$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml" "-targetdir:$(build.artifactstagingdirectory)/reports" -reporttypes:HTMLInline
+    dotnet tool install dotnet-reportgenerator-globaltool --tool-path $(System.DefaultWorkingDirectory)/tools
+    $(System.DefaultWorkingDirectory)/tools/reportgenerator "-reports:$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml" "-targetdir:$(build.artifactstagingdirectory)/reports" -reporttypes:HTMLInline
   displayName: 'Code Coverage Report Generator'
 
 - task: PublishCodeCoverageResults@1
