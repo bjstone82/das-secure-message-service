@@ -5,7 +5,7 @@ using NUnit.Framework;
 using SFA.DAS.SecureMessageService.Core.IServices;
 using SFA.DAS.SecureMessageService.Web.Controllers;
 
-namespace SFA.DAS.SecureMessageService.Web.Tests
+namespace SFA.DAS.SecureMessageService.Web.UnitTests
 {
     public class MessagesControllerTests
     {
