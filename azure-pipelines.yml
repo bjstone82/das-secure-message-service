@@ -4,8 +4,8 @@ trigger:
   branches:
     include:
       - "*"
-    paths:
-      exclude:
+  paths:
+    exclude:
       - README.md
 pr: none
 
