@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.SecureMessageServic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.SecureMessageService.Core", "SFA.DAS.SecureMessageService.Core\SFA.DAS.SecureMessageService.Core.csproj", "{48F66B82-A0B6-441A-9A17-3C5B989282A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.SecureMessageService.Web.Tests", "SFA.DAS.SecureMessageService.Web.Tests\SFA.DAS.SecureMessageService.Web.Tests.csproj", "{7B1DD9DB-CE62-42A1-A978-BEBD041D640B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.SecureMessageService.Web.UnitTests", "SFA.DAS.SecureMessageService.Web.UnitTests\SFA.DAS.SecureMessageService.Web.UnitTests.csproj", "{7B1DD9DB-CE62-42A1-A978-BEBD041D640B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
