@@ -47,6 +47,7 @@ steps:
   displayName: 'Code Coverage Report Generator'
 
 - task: PublishCodeCoverageResults@1
+  displayName: 'Publish Code Coverage Results'
   inputs:
     codeCoverageTool: 'cobertura'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml'
