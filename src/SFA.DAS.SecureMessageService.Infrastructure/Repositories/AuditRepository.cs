@@ -13,10 +13,10 @@ namespace SFA.DAS.SecureMessageService.Infrastructure
     public class AuditRepository : IAuditRepository
     {
 
-        private readonly SharedConfig config;
+        private readonly ConfigEntity config;
         private readonly String tableName;
 
-        public AuditRepository(IOptions<SharedConfig> _config)
+        public AuditRepository(IOptions<ConfigEntity> _config)
         {
             config = _config.Value;
             tableName = "audit";

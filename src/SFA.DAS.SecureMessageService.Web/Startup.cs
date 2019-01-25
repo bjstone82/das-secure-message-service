@@ -35,7 +35,7 @@ namespace SFA.DAS.SecureMessageService.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<SharedConfig>(Configuration);
+            services.Configure<ConfigEntity>(Configuration);
             services.AddSingleton<IMessageService, MessageService>();
             services.AddSingleton<IProtectionRepository, ProtectionRepository>();
             services.AddSingleton<ICacheRepository, CacheRepository>();

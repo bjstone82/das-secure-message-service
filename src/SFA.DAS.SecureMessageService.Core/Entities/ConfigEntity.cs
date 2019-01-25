@@ -1,6 +1,6 @@
 namespace SFA.DAS.SecureMessageService.Core.Entities
 {
-    public class SharedConfig
+    public class ConfigEntity
     {
         public string StorageAccountConnectionString { get; set; }
     }

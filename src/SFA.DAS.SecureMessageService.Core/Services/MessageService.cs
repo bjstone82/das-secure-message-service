@@ -11,13 +11,13 @@ namespace SFA.DAS.SecureMessageService.Core.Services
 {
     public class MessageService : IMessageService
     {
-        private readonly SharedConfig config;
+        private readonly ConfigEntity config;
         private readonly IProtectionRepository protectionRepository;
         private readonly ICacheRepository cacheRepository;
 
         private readonly IAuditRepository auditRepository;
 
-        public MessageService(IProtectionRepository _protectionRepository, IOptions<SharedConfig> _config, ICacheRepository _cacheRepository, IAuditRepository _auditRepository)
+        public MessageService(IProtectionRepository _protectionRepository, IOptions<ConfigEntity> _config, ICacheRepository _cacheRepository, IAuditRepository _auditRepository)
         {
             protectionRepository = _protectionRepository;
             config = _config.Value;
