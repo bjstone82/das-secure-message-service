@@ -74,6 +74,11 @@ namespace SFA.DAS.SecureMessageService.Web
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddAntiforgery(options => 
+            {
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,6 +94,13 @@ namespace SFA.DAS.SecureMessageService.Web
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                context.Response.Headers.Add("X-Xss-Protection", "1");
+                await next();
+            });
 
             // enable app insights logging
             loggerFactory.AddApplicationInsights(app.ApplicationServices, LogLevel.Warning);
