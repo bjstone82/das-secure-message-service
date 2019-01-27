@@ -16,11 +16,12 @@ namespace SFA.DAS.SecureMessageService.Infrastructure
             dataProtector = _provider.CreateProtector("SFA.DAS.SecureMessageService.Infrastructure.Repositories.ProtectionRepository");
         }
 
-        public async Task<string> Protect(string message)
+        public string Protect(string message)
         {
             try
             {
                 return dataProtector.Protect(message);
+
             }
             catch (Exception e)
             {
@@ -28,7 +29,7 @@ namespace SFA.DAS.SecureMessageService.Infrastructure
             }
         }
 
-        public async Task<string> Unprotect(string message)
+        public string Unprotect(string message)
         {
             try
             {

@@ -30,7 +30,7 @@ namespace SFA.DAS.SecureMessageService.Core.Services
                 var key = Guid.NewGuid().ToString();
 
                 // Protect string
-                var protectedMessage = await protectionRepository.Protect(message);
+                var protectedMessage = protectionRepository.Protect(message);
 
                 // Save string to cache
                 await cacheRepository.SaveAsync(key, protectedMessage, ttl);
@@ -67,7 +67,7 @@ namespace SFA.DAS.SecureMessageService.Core.Services
                 var protectedMessage = await cacheRepository.RetrieveAsync(key);
 
                 // Encrypt string
-                var unprotectedMessage = await protectionRepository.Unprotect(protectedMessage);
+                var unprotectedMessage = protectionRepository.Unprotect(protectedMessage);
 
                 // Return the unprotected message
                 return unprotectedMessage;
