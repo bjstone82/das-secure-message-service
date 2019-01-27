@@ -10,7 +10,7 @@
         </h1>
 
         <div class="govuk-form-group">
-            @using (Html.BeginForm("SaveMessage", "Messages",  FormMethod.Post, new { @class = "govuk-form-group" } ))
+            @using (Html.BeginForm(FormMethod.Post, new { @class = "govuk-form-group" } ))
             {
                 @Html.AntiForgeryToken()
                 @Html.Label("Message",null, new { @class = "govuk-visually-hidden"} )

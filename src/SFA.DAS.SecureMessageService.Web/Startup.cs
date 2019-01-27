@@ -102,7 +102,7 @@ namespace SFA.DAS.SecureMessageService.Web
                 await next();
             });
 
-            // enable app insights logging
+            // Enable app insights logging
             loggerFactory.AddApplicationInsights(app.ApplicationServices, LogLevel.Warning);
 
             app.UseHttpsRedirection();
