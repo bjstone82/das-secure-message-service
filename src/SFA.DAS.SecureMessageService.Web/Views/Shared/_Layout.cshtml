@@ -28,9 +28,17 @@
     <div class="govuk-width-container">
         <main class="govuk-main-wrapper " id="main-content" role="main">
 
-            <div class="das-notification das-notification--warning" tabindex="-1">
+            <!-- <div class="das-notification das-notification--warning" tabindex="-1">
                 <h3 class="govuk-heading-m">WARNING</h3>
                 <p class="das-notification__body">This tool is for development purposes only.</p>
+            </div> -->
+
+            <div class="govuk-warning-text">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-warning-text__assistive">Warning</span>
+                    This tool is for development purposes only.
+                </strong>
             </div>
 
             @RenderBody()
