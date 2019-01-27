@@ -22,7 +22,7 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
             logger = _logger;
         }
 
-        [HttpGet("share")]
+        [HttpGet("share/{key}")]
         public async Task<IActionResult> ShareMessageUrl(string key)
         {
             // Check for message in cache
