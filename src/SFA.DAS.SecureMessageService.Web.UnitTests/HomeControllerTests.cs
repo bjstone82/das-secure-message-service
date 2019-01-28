@@ -19,10 +19,13 @@ namespace SFA.DAS.SecureMessageService.Web.UnitTests
         [Test]
         public void Index_ReturnsAViewResult()
         {
+            // Arrange
             var controller = new HomeController(logger.Object);
 
+            // Act
             var result = controller.Index();
 
+            // Assert
             Assert.AreEqual(typeof(ViewResult), result.GetType());
             var actualViewResult = result as ViewResult;
             Assert.IsNotNull(actualViewResult);

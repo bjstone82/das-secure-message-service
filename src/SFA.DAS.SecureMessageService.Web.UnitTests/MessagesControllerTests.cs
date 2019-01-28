@@ -17,44 +17,58 @@ namespace SFA.DAS.SecureMessageService.Web.UnitTests
     {
         protected Mock<ILogger<MessagesController>> logger;
         protected Mock<IMessageService> messageService;
+        protected ControllerContext controllerContext;
+        protected string testHttpScheme = "https";
+        protected string testHostname = "localhost";
+        protected int testPort = 1234;
 
         [SetUp]
         public void Setup()
         {
             logger = new Mock<ILogger<MessagesController>>();
             messageService = new Mock<IMessageService>();
+            var mockHttpContext = new Mock<HttpContext>();
+            var mockRequest = new Mock<HttpRequest>();
+            mockRequest.SetupGet(t => t.Scheme).Returns(testHttpScheme);
+            mockRequest.SetupGet(t => t.Host).Returns(new HostString(testHostname, testPort));
+            mockHttpContext.SetupGet(h => h.Request).Returns(mockRequest.Object);
+            controllerContext = new ControllerContext()
+            {
+                HttpContext = mockHttpContext.Object
+            };
         }
 
         [Test]
         public async Task Messages_SuccessfullySavesAValidForm()
         {
+            // Arrange
+            var testMessage = "testmessage";
+            var testTtl = 1;
+            var testKey = "somekey1234";
+
             var controller = new MessagesController(messageService.Object, logger.Object);
-            var mockHttpContext = new Mock<HttpContext>();
-            var mockRequest = new Mock<HttpRequest>();
 
-            mockRequest.SetupGet(t => t.Form["TtlValue.Keys"]).Returns("1");
-            mockRequest.SetupGet(t => t.Form["Message"]).Returns("testmessage");
-            mockRequest.SetupGet(t => t.Scheme).Returns("https");
-            mockRequest.SetupGet(t => t.Host).Returns(new HostString("localhost", 1234));
+            messageService.Setup(c => c.Create(testMessage, testTtl)).ReturnsAsync(testKey);
 
-            messageService.Setup(c => c.Create("testmessage", 1)).ReturnsAsync("somekey1234");
+            controller.ControllerContext = controllerContext;
 
-            mockHttpContext.SetupGet(h => h.Request).Returns(mockRequest.Object);
-
-            controller.ControllerContext = new ControllerContext()
+            var indexViewModel = new IndexViewModel()
             {
-                HttpContext = mockHttpContext.Object
+                Message = testMessage,
+                Ttl = testTtl
             };
 
-            var result = await controller.SaveMessage();
+            // Act
+            var result = await controller.SaveMessage(indexViewModel);
 
+            // Assert
             Assert.IsNotNull(result);
             var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult);
             Assert.AreEqual(viewResult.ViewName, "ShowMessageUrl");
             var model = viewResult.Model as ShowMessageUrlViewModel;
             Assert.IsNotNull(model);
-            Assert.AreEqual(model.Url, "https://localhost:1234/messages/somekey1234");
+            Assert.AreEqual(model.Url, $"{testHttpScheme}://{testHostname}:{testPort}/messages/{testKey}");
         }
     }
 }
