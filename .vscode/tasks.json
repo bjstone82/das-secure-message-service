@@ -4,11 +4,11 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build Web",
+            "label": "Build Solution",
             "command": "dotnet",
             "args": [
                 "build",
-                "${workspaceFolder}/src/SFA.DAS.SecureMessageService.Web"
+                "${workspaceFolder}/src/SFA.DAS.SecureMessageService.sln"
             ],
             "type": "process",
             "group": "build",
@@ -26,6 +26,20 @@
             ],
             "type": "process",
             "group": "test",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Clean Solution",
+            "command": "dotnet",
+            "args": [
+                "clean",
+                "${workspaceFolder}/src/SFA.DAS.SecureMessageService.sln"
+            ],
+            "type": "process",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
             "problemMatcher": "$msCompile"
         }
     ]
