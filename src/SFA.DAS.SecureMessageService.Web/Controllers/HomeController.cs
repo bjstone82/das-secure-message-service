@@ -29,21 +29,17 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
         }
 
         [HttpPost("")]
-        public  async Task<IActionResult> IndexSubmitMessage()
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> IndexSubmitMessage(IndexViewModel indexViewModel)
         {
-            // Retrieve ttl value from the request
-            var ttl = Convert.ToInt32(Request.Form["TtlValue.Keys"]);
 
-            // Create the message and retrieve the url token
-            var message = Request.Form["Message"];
-
-            if (String.IsNullOrEmpty(message))
+            if (String.IsNullOrEmpty(indexViewModel.Message))
             {
                 logger.LogError(1, "Message cannot be null");
                 return new BadRequestResult();
             }
 
-            var key = await messageService.Create(message, ttl);
+            var key = await messageService.Create(indexViewModel.Message, indexViewModel.Ttl);
             logger.LogInformation(1, $"Saving message: {key}");
 
             return RedirectToAction("ShareMessageUrl", "Messages", new {key = key} );
