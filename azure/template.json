@@ -91,7 +91,7 @@
                     "appServiceAppSettings": {
                         "value": [
                             {
-                                "name": "APPINSIGHTS_INSTRUMETATIONKEY",
+                                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                                 "value": "[reference('AppInsights').outputs.InstrumentationKey.value]"
                             },
                             {
