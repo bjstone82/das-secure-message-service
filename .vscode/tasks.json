@@ -18,6 +18,20 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "Build Web Project",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/SFA.DAS.SecureMessageService.Web"
+            ],
+            "type": "process",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "Test All Solution Projects",
             "command": "dotnet",
             "args": [

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -10,9 +11,11 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.SecureMessageService.Core.IServices;
 using SFA.DAS.SecureMessageService.Web.Controllers;
+using SFA.DAS.SecureMessageService.Web.Models;
 
 namespace SFA.DAS.SecureMessageService.Web.UnitTests
 {
+    [TestFixture]
     public class MessagesControllerTests
     {
         protected Mock<ILogger<MessagesController>> logger;
@@ -69,6 +72,30 @@ namespace SFA.DAS.SecureMessageService.Web.UnitTests
             var model = viewResult.Model as ShowMessageUrlViewModel;
             Assert.IsNotNull(model);
             Assert.AreEqual(model.Url, $"{testHttpScheme}://{testHostname}:{testPort}/messages/{testKey}");
+        }
+
+        [TestCase("")]
+        [TestCase(null)]
+        public void Messages_ReturnsErrorWhenNoMessage(string message)
+        {
+            // Arrange
+            var testTtl = 1;
+            var testKey = "somekey1234";
+
+            var controller = new MessagesController(messageService.Object, logger.Object);
+
+            messageService.Setup(c => c.Create(message, testTtl)).ReturnsAsync(testKey);
+
+            controller.ControllerContext = controllerContext;
+
+            var indexViewModel = new IndexViewModel()
+            {
+                Message = message,
+                Ttl = testTtl
+            };
+
+            // Act and Assert
+            Assert.ThrowsAsync<Exception>(async () => await controller.SaveMessage(indexViewModel));
         }
     }
 }

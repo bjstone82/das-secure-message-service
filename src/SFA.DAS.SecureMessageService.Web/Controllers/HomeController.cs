@@ -22,14 +22,13 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var indexViewModel = new IndexViewModel();
-            return View("Index", indexViewModel);
+            return View("Index", new IndexViewModel());
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Error(string errorMessage = "")
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View("Error", new ErrorViewModel { ErrorMessage = errorMessage, RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier });
         }
     }
 }
