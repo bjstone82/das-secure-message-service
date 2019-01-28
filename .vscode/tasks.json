@@ -29,6 +29,20 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "Test All Solution Projects with Coverage",
+            "command": "dotnet",
+            "args": [
+                "test",
+                "${workspaceFolder}/src/SFA.DAS.SecureMessageService.sln",
+                "/p:CollectCoverage=true",
+                "/p:CoverletOutputFormat=lcov",
+                "/p:CoverletOutput=./lcov.info"
+            ],
+            "type": "process",
+            "group": "test",
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "Clean Solution",
             "command": "dotnet",
             "args": [
