@@ -65,12 +65,5 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
             var viewMessageViewModel = new ViewMessageViewModel() { Message = message };
             return View(viewMessageViewModel);
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
     }
 }
