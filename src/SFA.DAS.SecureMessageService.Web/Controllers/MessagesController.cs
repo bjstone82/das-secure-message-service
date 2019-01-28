@@ -23,23 +23,17 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
         }
 
         [HttpPost("share")]
-        public async Task<IActionResult> SaveMessage()
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveMessage(IndexViewModel indexViewModel)
         {
-
-            // Retrieve ttl value from the request
-            var ttl = Convert.ToInt32(Request.Form["TtlValue.Keys"]);
-
-            // Create the message and retrieve the url token
-            var message = Request.Form["Message"];
-
-            if (String.IsNullOrEmpty(message))
+            if (String.IsNullOrEmpty(indexViewModel.Message))
             {
                 var exceptionMessage = "Message cannot be null";
                 logger.LogError(1, exceptionMessage);
                 throw new Exception(exceptionMessage);
             }
 
-            var key = await messageService.Create(message, ttl);
+            var key = await messageService.Create(indexViewModel.Message, indexViewModel.Ttl);
             var url = $"{Request.Scheme}://{Request.Host}/messages/{key}";
 
             logger.LogInformation(1, "Saving message with key {{key}}", key);
@@ -60,6 +54,7 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
 
 
         [HttpPost("messages/{key}")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ViewMessage(string key)
         {
 
