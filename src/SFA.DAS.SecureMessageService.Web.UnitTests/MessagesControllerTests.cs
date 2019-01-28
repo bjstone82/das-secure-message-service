@@ -42,60 +42,24 @@ namespace SFA.DAS.SecureMessageService.Web.UnitTests
         }
 
         [Test]
-        public async Task Messages_SuccessfullySavesAValidForm()
+        public async Task Messages_SuccessfullyRetrievesMessageUrlWhenMessageExists()
         {
             // Arrange
-            var testMessage = "testmessage";
-            var testTtl = 1;
-            var testKey = "somekey1234";
+            var testKey = "sometestkey5312";
+            messageService.Setup(e => e.MessageExists(testKey)).ReturnsAsync(true);
 
             var controller = new MessagesController(messageService.Object, logger.Object);
-
-            messageService.Setup(c => c.Create(testMessage, testTtl)).ReturnsAsync(testKey);
-
             controller.ControllerContext = controllerContext;
 
-            var indexViewModel = new IndexViewModel()
-            {
-                Message = testMessage,
-                Ttl = testTtl
-            };
 
             // Act
-            var result = await controller.SaveMessage(indexViewModel);
+            var result = await controller.ShareMessageUrl(testKey);
 
             // Assert
-            Assert.IsNotNull(result);
-            var viewResult = result as ViewResult;
-            Assert.IsNotNull(viewResult);
-            Assert.AreEqual(viewResult.ViewName, "ShowMessageUrl");
-            var model = viewResult.Model as ShowMessageUrlViewModel;
-            Assert.IsNotNull(model);
-            Assert.AreEqual(model.Url, $"{testHttpScheme}://{testHostname}:{testPort}/messages/{testKey}");
-        }
-
-        [TestCase("")]
-        [TestCase(null)]
-        public void Messages_ReturnsErrorWhenNoMessage(string message)
-        {
-            // Arrange
-            var testTtl = 1;
-            var testKey = "somekey1234";
-
-            var controller = new MessagesController(messageService.Object, logger.Object);
-
-            messageService.Setup(c => c.Create(message, testTtl)).ReturnsAsync(testKey);
-
-            controller.ControllerContext = controllerContext;
-
-            var indexViewModel = new IndexViewModel()
-            {
-                Message = message,
-                Ttl = testTtl
-            };
-
-            // Act and Assert
-            Assert.ThrowsAsync<Exception>(async () => await controller.SaveMessage(indexViewModel));
+            var actualResult = result as ViewResult;
+            Assert.IsNotNull(actualResult);
+            Assert.AreEqual(typeof(ShowMessageUrlViewModel), actualResult.Model.GetType());
+            Assert.AreEqual(((ShowMessageUrlViewModel)actualResult.Model).Url, $"{testHttpScheme}://{testHostname}:{testPort}/messages/{testKey}");
         }
     }
 }

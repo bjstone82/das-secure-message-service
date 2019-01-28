@@ -22,22 +22,19 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
             logger = _logger;
         }
 
-        [HttpPost("share")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveMessage(IndexViewModel indexViewModel)
+        [HttpGet("share/{key}")]
+        public async Task<IActionResult> ShareMessageUrl(string key)
         {
-            if (String.IsNullOrEmpty(indexViewModel.Message))
+            // Check for message in cache
+            var messageExists = await messageService.MessageExists(key);
+            if(!messageExists)
             {
-                var exceptionMessage = "Message cannot be null";
-                logger.LogError(1, exceptionMessage);
-                throw new Exception(exceptionMessage);
+                logger.LogError(1, $"Message with key {key} does not exist");
+                return View("InvalidMessageKey");
             }
 
-            var key = await messageService.Create(indexViewModel.Message, indexViewModel.Ttl);
+            // Create url and return view
             var url = $"{Request.Scheme}://{Request.Host}/messages/{key}";
-
-            logger.LogInformation(1, "Saving message with key {{key}}", key);
-
             var showMessageUrlViewModel = new ShowMessageUrlViewModel() { Url = url };
             return View("ShowMessageUrl", showMessageUrlViewModel);
         }
@@ -47,7 +44,7 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
         {
             var messageExists = await messageService.MessageExists(key);
             ViewBag.MessageExists = messageExists;
-            logger.LogInformation(1, "Message with key {{key}} exists: {{exists}}", key, messageExists.ToString());
+            logger.LogInformation(1, $"Message {key} exists: {messageExists.ToString()}");
 
             return View();
         }
@@ -57,10 +54,9 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ViewMessage(string key)
         {
-
-            logger.LogInformation(1, "Attempting to retrieve message with key {{key}}", key);
+            logger.LogInformation(1, $"Attempting to retrieve message: {key}");
             var message = await messageService.Retrieve(key);
-            logger.LogInformation(1, "Message with key {{key}} has been removed from cache", key);
+            logger.LogInformation(1, $"Message {key} has been removed from cache");
 
             var viewMessageViewModel = new ViewMessageViewModel() { Message = message };
             return View(viewMessageViewModel);

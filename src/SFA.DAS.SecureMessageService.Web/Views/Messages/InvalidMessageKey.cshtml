@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Share your message";
+    @model ShowMessageUrlViewModel;
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Invalid Message Identifier</h1>
+        <p class="govuk-body">The message identifier provided was not valid.</p>
+        <p class="govuk-body"><a href="@Url.Content("/")" class="govuk-link">Click here to create a new message</a></p>   
+    </div>
+</div>
