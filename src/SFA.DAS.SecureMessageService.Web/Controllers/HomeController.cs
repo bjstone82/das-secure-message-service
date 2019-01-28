@@ -32,7 +32,6 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> IndexSubmitMessage(IndexViewModel indexViewModel)
         {
-
             if (String.IsNullOrEmpty(indexViewModel.Message))
             {
                 logger.LogError(1, "Message cannot be null");
@@ -42,7 +41,7 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
             var key = await messageService.Create(indexViewModel.Message, indexViewModel.Ttl);
             logger.LogInformation(1, $"Saving message: {key}");
 
-            return RedirectToAction("ShareMessageUrl", "Messages", new {key = key} );
+            return RedirectToAction("ShareMessageUrl", "Messages", new { key = key });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
