@@ -53,6 +53,14 @@ steps:
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml'
     reportDirectory: '$(build.artifactstagingdirectory)/reports'
 
+- task: mspremier.BuildQualityChecks.QualityChecks-task.BuildQualityChecks@5
+  displayName: 'Check build quality'
+  inputs:
+    checkCoverage: true
+    coverageType: lines
+    coverageDeltaType: percentage
+    buildConfiguration: '$(buildConfiguration)'
+    
 - task: DotNetCoreCLI@2
   displayName: 'Publish'
   inputs:
