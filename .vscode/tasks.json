@@ -49,8 +49,9 @@
                 "test",
                 "${workspaceFolder}/src/SFA.DAS.SecureMessageService.sln",
                 "/p:CollectCoverage=true",
-                "/p:CoverletOutputFormat=lcov",
-                "/p:CoverletOutput=./lcov.info"
+                "/p:CoverletOutputFormat=\"json,lcov\"",
+                "/p:CoverletOutput=\"${workspaceFolder}/lcov\"",
+                "/p:MergeWith=${workspaceFolder}\\lcov.json"
             ],
             "type": "process",
             "group": "test",
