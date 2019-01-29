@@ -18,6 +18,7 @@ using SFA.DAS.SecureMessageService.Core.Services;
 using SFA.DAS.SecureMessageService.Infrastructure.Repositories;
 using StackExchange.Redis;
 using Microsoft.Extensions.Logging;
+using SFA.DAS.SecureMessageService.Infrastructure;
 
 namespace SFA.DAS.SecureMessageService.Web
 {
@@ -39,6 +40,7 @@ namespace SFA.DAS.SecureMessageService.Web
             services.AddSingleton<IMessageService, MessageService>();
             services.AddSingleton<IProtectionRepository, ProtectionRepository>();
             services.AddSingleton<ICacheRepository, CacheRepository>();
+            services.AddSingleton<IDasDistributedCache, DasDistributedCache>();
 
             try
             {

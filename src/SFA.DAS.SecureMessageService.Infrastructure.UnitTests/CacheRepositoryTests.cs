@@ -2,28 +2,23 @@ using System;
 using Moq;
 using NUnit.Framework;
 using Microsoft.Extensions.Caching.Distributed;
-using SFA.DAS.SecureMessageService.Core.IRepositories;
 using SFA.DAS.SecureMessageService.Infrastructure.Repositories;
 using System.Threading.Tasks;
-using System.Threading;
-using Microsoft.Extensions.Caching.Memory;
+using SFA.DAS.SecureMessageService.Core.IRepositories;
 
 namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
 {
     [TestFixture]
     public class CacheRepositoryTests
     {
-        protected Mock<IDistributedCache> cache;
+        private Mock<IDasDistributedCache> _cache;
+        private CacheRepository _repository;
 
         [SetUp]
         public void Setup()
         {
-            cache = new Mock<IDistributedCache>();
-        }
-
-        [Test]
-        public void Cache_SavesAMessageToTheCache()
-        {
+            _cache = new Mock<IDasDistributedCache>();
+        
             // Arrange
             var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
             var message = "test message";
@@ -34,9 +29,9 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(ttl)
             };
-
-            var repository = new CacheRepository(cache.Object);
-            cache.Setup(c => c.SetStringAsync(key, message, timeSpan, new CancellationToken())).Verifiable();
+            _cache.Setup(c => c.SetStringAsync(key, message, timeSpan));
+            _repository = new CacheRepository(_cache.Object);
+            
         }
 
         [Test]
@@ -46,11 +41,11 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
             var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
             var message = "test message";
 
-            cache.Setup(c => c.GetStringAsync(key, new CancellationToken())).ReturnsAsync(message);
-            var repository = new CacheRepository(cache.Object);
+            _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(message);
+            //var repository = new CacheRepository(_cache.Object);
 
             // Act
-            var result = await repository.RetrieveAsync(key);
+            var result = await _repository.RetrieveAsync(key);
 
             // Assert
             Assert.AreEqual(message, result);
@@ -62,8 +57,8 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
             // Arrange
             var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
 
-            cache.Setup(c => c.GetStringAsync(key, new CancellationToken())).ReturnsAsync("");
-            var repository = new CacheRepository(cache.Object);
+            _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync("");
+            var repository = new CacheRepository(_cache.Object);
 
             // Act
             var result = await repository.RetrieveAsync(key);
@@ -71,7 +66,7 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
             // TODO: Need to test removal?
 
             // Assert
-            Assert.AreEqual(default(String), result);
+            Assert.AreEqual(string.Empty, result);
         }
 
         [Test]
@@ -81,8 +76,8 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
             var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
             var message = "test message";
 
-            cache.Setup(c => c.GetStringAsync(key, new CancellationToken())).ReturnsAsync(message);
-            var repository = new CacheRepository(cache.Object);
+            _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(message);
+            var repository = new CacheRepository(_cache.Object);
 
             // Act
             var result = await repository.TestAsync(key);
@@ -97,8 +92,8 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
             // Arrange
             var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
 
-            cache.Setup(c => c.GetStringAsync(key, new CancellationToken())).ReturnsAsync(default(String));
-            var repository = new CacheRepository(cache.Object);
+            _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(default(String));
+            var repository = new CacheRepository(_cache.Object);
 
             // Act
             var result = await repository.TestAsync(key);
