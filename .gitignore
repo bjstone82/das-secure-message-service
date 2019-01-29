@@ -38,3 +38,4 @@ azure-pipelines.aci.yml
 coverage.json
 coverage.cobertura.xml
 lcov.info
+lcov.json
