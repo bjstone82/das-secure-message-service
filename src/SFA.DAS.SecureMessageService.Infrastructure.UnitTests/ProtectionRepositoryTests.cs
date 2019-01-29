@@ -12,17 +12,16 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
     [TestFixture]
     public class ProtectionRepositoryTests
     {
-        protected Mock<IDasDataProtector> dataProtector;
-        protected string protectedMessage;
-        protected string unprotectedMessage;
+        private Mock<IDasDataProtector> dataProtector;
+        private ProtectionRepository repository;
+        private string protectedMessage = "xxxxx";
+        private string unprotectedMessage = "test message";
 
         [SetUp]
         public void Setup()
         {
             dataProtector = new Mock<IDasDataProtector>();
-
-            protectedMessage = "xxxxxx";
-            unprotectedMessage = "test message";
+            repository = new ProtectionRepository(dataProtector.Object);
         }
 
         [Test]
@@ -30,7 +29,6 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
         {
             // Arrange
             dataProtector.Setup(c => c.Protect(unprotectedMessage)).Returns(protectedMessage);
-            var repository = new ProtectionRepository(dataProtector.Object);
 
             // Act
             var result = repository.Protect(unprotectedMessage);
@@ -44,7 +42,6 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
         {
             // Arrange
             dataProtector.Setup(c => c.Protect(unprotectedMessage)).Throws<Exception>();
-            var repository = new ProtectionRepository(dataProtector.Object);
 
             // Assert
             Assert.Throws<Exception>(() => repository.Protect(unprotectedMessage));
@@ -55,7 +52,6 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
         {
             // Arrange
             dataProtector.Setup(c => c.Unprotect(protectedMessage)).Returns(unprotectedMessage);
-            var repository = new ProtectionRepository(dataProtector.Object);
 
             // Act
             var result = repository.Unprotect(protectedMessage);
@@ -69,7 +65,6 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
         {
             // Arrange
             dataProtector.Setup(c => c.Unprotect(protectedMessage)).Throws<Exception>();
-            var repository = new ProtectionRepository(dataProtector.Object);
 
             // Assert
             Assert.Throws<Exception>(() => repository.Unprotect(protectedMessage));
