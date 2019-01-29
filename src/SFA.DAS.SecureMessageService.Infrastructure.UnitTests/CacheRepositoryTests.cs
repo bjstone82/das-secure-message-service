@@ -42,7 +42,6 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
             var message = "test message";
 
             _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(message);
-            //var repository = new CacheRepository(_cache.Object);
 
             // Act
             var result = await _repository.RetrieveAsync(key);
@@ -58,10 +57,9 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
             var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
 
             _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync("");
-            var repository = new CacheRepository(_cache.Object);
 
             // Act
-            var result = await repository.RetrieveAsync(key);
+            var result = await _repository.RetrieveAsync(key);
 
             // TODO: Need to test removal?
 
@@ -77,10 +75,9 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
             var message = "test message";
 
             _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(message);
-            var repository = new CacheRepository(_cache.Object);
 
             // Act
-            var result = await repository.TestAsync(key);
+            var result = await _repository.TestAsync(key);
 
             // Assert
             Assert.IsTrue(result);
@@ -93,10 +90,9 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
             var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
 
             _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(default(String));
-            var repository = new CacheRepository(_cache.Object);
 
             // Act
-            var result = await repository.TestAsync(key);
+            var result = await _repository.TestAsync(key);
 
             // Assert
             Assert.IsFalse(result);
