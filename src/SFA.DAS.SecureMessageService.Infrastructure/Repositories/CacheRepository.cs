@@ -16,7 +16,6 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.Repositories
 
         public async Task SaveAsync(string key, string message, int ttl)
         {
-
             // Save message to cache using given ttl
             await _cache.SetStringAsync(key, message, new DistributedCacheEntryOptions
             {
@@ -37,7 +36,6 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.Repositories
 
         public async Task<bool> TestAsync(string key)
         {
-
             // Retrieve but do not remove message
             var message = await _cache.GetStringAsync(key);
 
