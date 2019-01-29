@@ -13,34 +13,28 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
     {
         private Mock<IDasDistributedCache> _cache;
         private CacheRepository _repository;
+        private string message = "test message";
+        private string key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
+        private int ttl = 1;
 
         [SetUp]
         public void Setup()
         {
             _cache = new Mock<IDasDistributedCache>();
-        
-            // Arrange
-            var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
-            var message = "test message";
-            var ttl = 1;
-            
-
+                    
             var timeSpan = new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(ttl)
             };
+
             _cache.Setup(c => c.SetStringAsync(key, message, timeSpan));
             _repository = new CacheRepository(_cache.Object);
-            
         }
 
         [Test]
         public async Task Cache_RetrevieReturnsAMessage()
         {
             // Arrange
-            var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
-            var message = "test message";
-
             _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(message);
 
             // Act
@@ -54,8 +48,6 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
         public async Task Cache_RetrevieDoesNotReturnAMessage()
         {
             // Arrange
-            var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
-
             _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync("");
 
             // Act
@@ -71,9 +63,6 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
         public async Task Cache_TestIfMessageExistsInCache()
         {
             // Arrange
-            var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
-            var message = "test message";
-
             _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(message);
 
             // Act
@@ -87,8 +76,6 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
         public async Task Cache_TestIfMessageDoesNotExistsInCache()
         {
             // Arrange
-            var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
-
             _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(default(String));
 
             // Act
