@@ -11,14 +11,12 @@ namespace SFA.DAS.SecureMessageService.Core.Services
 {
     public class MessageService : IMessageService
     {
-        private readonly SharedConfig config;
         private readonly IProtectionRepository protectionRepository;
         private readonly ICacheRepository cacheRepository;
 
-        public MessageService(IProtectionRepository _protectionRepository, IOptions<SharedConfig> _config, ICacheRepository _cacheRepository)
+        public MessageService(IProtectionRepository _protectionRepository, ICacheRepository _cacheRepository)
         {
             protectionRepository = _protectionRepository;
-            config = _config.Value;
             cacheRepository = _cacheRepository;
         }
 
@@ -48,7 +46,6 @@ namespace SFA.DAS.SecureMessageService.Core.Services
         {
             try
             {
-
                 // Test to see if the message key exists in the cache
                 return await cacheRepository.TestAsync(key);
             }
