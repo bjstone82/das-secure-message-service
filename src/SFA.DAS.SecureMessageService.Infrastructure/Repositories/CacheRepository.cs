@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using SFA.DAS.SecureMessageService.Core.IRepositories;
 
-namespace SFA.DAS.SecureMessageService.Infrastructure
+namespace SFA.DAS.SecureMessageService.Infrastructure.Repositories
 {
     public class CacheRepository : ICacheRepository
     {

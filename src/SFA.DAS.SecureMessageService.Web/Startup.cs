@@ -15,7 +15,7 @@ using SFA.DAS.SecureMessageService.Core.Entities;
 using SFA.DAS.SecureMessageService.Core.IServices;
 using SFA.DAS.SecureMessageService.Core.IRepositories;
 using SFA.DAS.SecureMessageService.Core.Services;
-using SFA.DAS.SecureMessageService.Infrastructure;
+using SFA.DAS.SecureMessageService.Infrastructure.Repositories;
 using StackExchange.Redis;
 using Microsoft.Extensions.Logging;
 
