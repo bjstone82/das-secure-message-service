@@ -12,56 +12,74 @@ namespace SFA.DAS.SecureMessageService.Core.UnitTests
     [TestFixture]
     public class MessageServiceTests
     {
-        protected Mock<IProtectionRepository> protectionRepository;
-        protected Mock<ICacheRepository> cacheRepository;
+        private Mock<IProtectionRepository> protectionRepository;
+        private Mock<ICacheRepository> cacheRepository;
+        private MessageService service;
+        private string unprotectedMessage = "test message";
+        private string protectedMessage = "xxxxxxxxxx";
+        private string key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
+        private int ttl = 1;
 
         [SetUp]
         public void Setup()
         {
             protectionRepository = new Mock<IProtectionRepository>();
             cacheRepository = new Mock<ICacheRepository>();
+
+            service = new MessageService(protectionRepository.Object, cacheRepository.Object);
         }
 
         [Test]
-        public async Task MessageService_CreateReturnsAValidKey()
+        public async Task Create_ReturnsAValidKey()
         {
             // Arrange
-            var unprotectedMessage = "testmessage";
-            var protectedMessage = "xxxxxxxxx";
-            var testTtl = 1;
-            Guid key;
-
-            var service = new MessageService(protectionRepository.Object, cacheRepository.Object);
+            Guid returnedKey;
             protectionRepository.Setup(c => c.Protect(unprotectedMessage)).Returns(protectedMessage);
+            cacheRepository.Setup(c => c.SaveAsync(It.IsAny<string>(), protectedMessage, ttl)).Returns(Task.FromResult(false));
 
             // Act
-            var result = await service.Create(unprotectedMessage, testTtl);
+            var result = await service.Create(unprotectedMessage, ttl);
 
             // Assert
-            Assert.IsTrue(Guid.TryParse(result, out key));
+            Assert.IsTrue(Guid.TryParse(result, out returnedKey));
+            protectionRepository.VerifyAll();
+            cacheRepository.VerifyAll();
         }
 
         [Test]
-        public void MessageService_CreateDoesNotReturnAValidKey()
+        public async Task Create_DoesNotReturnAValidKey()
         {
             // Arrange
-            var unprotectedMessage = "testmessage";
-            var testTtl = 1;
+            Guid returnedKey;
+            protectionRepository.Setup(c => c.Protect(unprotectedMessage)).Returns(protectedMessage);
+            cacheRepository.Setup(c => c.SaveAsync(It.IsAny<string>(), protectedMessage, ttl)).Returns(Task.FromResult(false));
 
-            var service = new MessageService(protectionRepository.Object, cacheRepository.Object);
-            protectionRepository.Setup(c => c.Protect(unprotectedMessage)).Throws<Exception>();
+            // Act
+            var result = await service.Create(unprotectedMessage, ttl);
+            var incorrectResult = "incorrect format";
 
-             // Assert
-            Assert.ThrowsAsync<Exception>(async () => await service.Create(unprotectedMessage, testTtl));
+            // Assert
+            Assert.IsFalse(Guid.TryParse(incorrectResult, out returnedKey));
+            protectionRepository.VerifyAll();
+            cacheRepository.VerifyAll();
         }
 
         [Test]
-        public async Task MessageService_MessageExistsInCache()
+        public void Create_ThrowsAValidException()
+        {
+            // Arrange
+            protectionRepository.Setup(c => c.Protect(unprotectedMessage)).Throws<Exception>();
+            cacheRepository.Setup(c => c.SaveAsync(It.IsAny<string>(), protectedMessage, ttl)).Returns(Task.FromResult(false));
+
+             // Assert
+            Assert.ThrowsAsync<Exception>(async () => await service.Create(unprotectedMessage, ttl));
+        }
+
+        [Test]
+        public async Task MessageExists_ReturnsTrueIfMessageIsPresent()
         {
             //Arrange
             var key = Guid.NewGuid().ToString();
-
-            var service = new MessageService(protectionRepository.Object, cacheRepository.Object);
             cacheRepository.Setup(c => c.TestAsync(key)).ReturnsAsync(true);
 
             // Act
@@ -72,12 +90,9 @@ namespace SFA.DAS.SecureMessageService.Core.UnitTests
         }
 
         [Test]
-        public async Task MessageService_MessageDoesNotExistInCache()
+        public async Task MessageExists_ReturnsFalseIfMessageDoesNotExistInCache()
         {
             //Arrange
-            var key = Guid.NewGuid().ToString();
-
-            var service = new MessageService(protectionRepository.Object, cacheRepository.Object);
             cacheRepository.Setup(c => c.TestAsync(key)).ReturnsAsync(false);
 
             // Act
@@ -88,12 +103,9 @@ namespace SFA.DAS.SecureMessageService.Core.UnitTests
         }
 
         [Test]
-        public void MessageService_MessageExistsInCacheThrows()
+        public void MessageExists_ThrowsAValidException()
         {
             //Arrange
-            var key = Guid.NewGuid().ToString();
-
-            var service = new MessageService(protectionRepository.Object, cacheRepository.Object);
             cacheRepository.Setup(c => c.TestAsync(key)).Throws<Exception>();
 
             // Assert
@@ -101,14 +113,9 @@ namespace SFA.DAS.SecureMessageService.Core.UnitTests
         }
 
         [Test]
-        public async Task MessageService_RetrieveReturnsAValidMessage()
+        public async Task Retrieve_ReturnsAValidMessage()
         {
             // Arrange
-            var unprotectedMessage = "testmessage";
-            var protectedMessage = "xxxxxxxxx";
-            var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
-
-            var service = new MessageService(protectionRepository.Object, cacheRepository.Object);
             cacheRepository.Setup(c => c.RetrieveAsync(key)).ReturnsAsync(protectedMessage);
             protectionRepository.Setup(c => c.Unprotect(protectedMessage)).Returns(unprotectedMessage);
 
@@ -117,16 +124,30 @@ namespace SFA.DAS.SecureMessageService.Core.UnitTests
 
             // Assert
             Assert.AreEqual(unprotectedMessage, result);
+            cacheRepository.VerifyAll();
+            protectionRepository.VerifyAll();
         }
 
         [Test]
-        public void MessageService_RetrieveThrows()
+        public async Task Retrieve_ReturnsAnInvalidMessage()
         {
             // Arrange
-            var protectedMessage = "xxxxxxxxx";
-            var key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
+            cacheRepository.Setup(c => c.RetrieveAsync(key)).ReturnsAsync(protectedMessage);
+            protectionRepository.Setup(c => c.Unprotect(protectedMessage)).Returns(default(String));
 
-            var service = new MessageService(protectionRepository.Object, cacheRepository.Object);
+            // Act
+            var result = await service.Retrieve(key);
+
+            // Assert
+            Assert.AreNotEqual(unprotectedMessage, result);
+            cacheRepository.VerifyAll();
+            protectionRepository.VerifyAll();
+        }
+
+        [Test]
+        public void Retrieve_ThrowsAValidException()
+        {
+            // Arrange
             cacheRepository.Setup(c => c.RetrieveAsync(key)).ReturnsAsync(protectedMessage);
             protectionRepository.Setup(c => c.Unprotect(protectedMessage)).Throws<Exception>();
 
