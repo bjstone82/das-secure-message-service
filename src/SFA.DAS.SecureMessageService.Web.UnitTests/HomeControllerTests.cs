@@ -17,20 +17,28 @@ namespace SFA.DAS.SecureMessageService.Web.UnitTests
     {
         protected Mock<ILogger<HomeController>> logger;
         protected Mock<IMessageService> messageService;
+        protected HomeController controller;
+        protected IndexViewModel indexViewModel;
+        protected string testMessage = "testmessage";
+        protected int testTtl = 1;
+        protected string testKey = "somekey1234";
 
         [SetUp]
         public void Setup()
         {
             logger = new Mock<ILogger<HomeController>>();
             messageService = new Mock<IMessageService>();
+            controller = new HomeController(logger.Object, messageService.Object);
+            indexViewModel = new IndexViewModel()
+            {
+                Message = testMessage,
+                Ttl = testTtl
+            };
         }
 
         [Test]
         public void Index_ReturnsExpectedViewResult()
         {
-            // Arrange
-            var controller = new HomeController(logger.Object, messageService.Object);
-
             // Act
             var result = controller.Index();
 
@@ -44,22 +52,10 @@ namespace SFA.DAS.SecureMessageService.Web.UnitTests
 
 
         [Test]
-        public async Task Index_SuccessfullyRedirectsOnFormPost()
+        public async Task IndexSubmitMessage_SuccessfullyRedirectsOnFormPost()
         {
             // Arrange
-            var testMessage = "testmessage";
-            var testTtl = 1;
-            var testKey = "somekey1234";
-
-            var controller = new HomeController(logger.Object, messageService.Object);
-
             messageService.Setup(c => c.Create(testMessage, testTtl)).ReturnsAsync(testKey);
-
-            var indexViewModel = new IndexViewModel()
-            {
-                Message = testMessage,
-                Ttl = testTtl
-            };
 
             // Act
             var result = await controller.IndexSubmitMessage(indexViewModel);
@@ -71,26 +67,16 @@ namespace SFA.DAS.SecureMessageService.Web.UnitTests
             Assert.AreEqual("ShareMessageUrl", actualResult.ActionName);
             Assert.AreEqual("Messages", actualResult.ControllerName);
             Assert.AreEqual(new RouteValueDictionary(new { key = testKey }), actualResult.RouteValues);
+            messageService.VerifyAll();
         }
 
         [TestCase("")]
         [TestCase(null)]
-        public async Task Index_ReturnsBadRequestWhenNoMessage(string message)
+        public async Task IndexSubmitMessage_ReturnsBadRequestWhenNoMessage(string message)
         {
             // Arrange
-            var testTtl = 1;
-            var testKey = "somekey1234";
-
-            var controller = new HomeController(logger.Object, messageService.Object);
-
-            messageService.Setup(c => c.Create(message, testTtl)).ReturnsAsync(testKey);
-
-            var indexViewModel = new IndexViewModel()
-            {
-                Message = message,
-                Ttl = testTtl
-            };
-
+            indexViewModel.Message = message;
+            
             // Act
             var result = await controller.IndexSubmitMessage(indexViewModel);
 
@@ -102,9 +88,6 @@ namespace SFA.DAS.SecureMessageService.Web.UnitTests
         [Test]
         public void Error_ReturnsExpectedViewResult()
         {
-            // Arrange
-            var controller = new HomeController(logger.Object, messageService.Object);
-
             // Act
             var result = controller.Error();
 
