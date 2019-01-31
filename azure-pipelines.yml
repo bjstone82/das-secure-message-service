@@ -60,7 +60,7 @@ steps:
     coverageType: lines
     coverageDeltaType: percentage
     buildConfiguration: '$(buildConfiguration)'
-
+    baseBranchRef: 'refs/heads/master'
     
 - task: DotNetCoreCLI@2
   displayName: 'Publish'
@@ -68,7 +68,7 @@ steps:
     command: publish
     publishWebProjects: true
     projects: $(solutionPath)
-    arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)/publish'  
+    arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)/publish'
 
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
