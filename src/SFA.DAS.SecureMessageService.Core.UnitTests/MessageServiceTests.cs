@@ -153,6 +153,8 @@ namespace SFA.DAS.SecureMessageService.Core.UnitTests
 
             // Assert
             Assert.ThrowsAsync<Exception>(async () => await service.Retrieve(key));
+            cacheRepository.VerifyAll();
+            protectionRepository.VerifyAll();
         }
     }
 }
