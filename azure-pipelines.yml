@@ -43,14 +43,14 @@ steps:
 
 - pwsh: |
     dotnet tool install dotnet-reportgenerator-globaltool --tool-path $(System.DefaultWorkingDirectory)/tools
-    $(System.DefaultWorkingDirectory)/tools/reportgenerator "-reports:$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml" "-targetdir:$(build.artifactstagingdirectory)/reports" -reporttypes:HTMLInline
+    $(System.DefaultWorkingDirectory)/tools/reportgenerator "-reports:$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml" "-targetdir:$(build.artifactstagingdirectory)/reports/Cobertura.xml" -reporttypes:HTMLInline
   displayName: 'Code Coverage Report Generator'
 
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish Code Coverage Results'
   inputs:
     codeCoverageTool: 'cobertura'
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml'
+    summaryFileLocation: '$(build.artifactstagingdirectory)/reports/Cobertura.xml'
     reportDirectory: '$(build.artifactstagingdirectory)/reports'
 
 - task: mspremier.BuildQualityChecks.QualityChecks-task.BuildQualityChecks@5
