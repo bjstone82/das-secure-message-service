@@ -43,14 +43,14 @@ steps:
 
 - pwsh: |
     dotnet tool install dotnet-reportgenerator-globaltool --tool-path $(System.DefaultWorkingDirectory)/tools
-    $(System.DefaultWorkingDirectory)/tools/reportgenerator "-reports:$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml" "-targetdir:$(build.artifactstagingdirectory)/reports" -reporttypes:HTMLInline
+    $(System.DefaultWorkingDirectory)/tools/reportgenerator "-reports:$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml" "-targetdir:$(build.artifactstagingdirectory)/reports" "-reporttypes:Cobertura;HtmlInline_AzurePipelines"
   displayName: 'Code Coverage Report Generator'
 
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish Code Coverage Results'
   inputs:
     codeCoverageTool: 'cobertura'
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml'
+    summaryFileLocation: '$(build.artifactstagingdirectory)/reports/Cobertura.xml'
     reportDirectory: '$(build.artifactstagingdirectory)/reports'
 
 - task: mspremier.BuildQualityChecks.QualityChecks-task.BuildQualityChecks@5
@@ -60,6 +60,7 @@ steps:
     coverageType: lines
     coverageDeltaType: percentage
     buildConfiguration: '$(buildConfiguration)'
+    baseBranchRef: 'refs/heads/master'
     
 - task: DotNetCoreCLI@2
   displayName: 'Publish'
@@ -67,7 +68,7 @@ steps:
     command: publish
     publishWebProjects: true
     projects: $(solutionPath)
-    arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)/publish'  
+    arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)/publish'
 
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
