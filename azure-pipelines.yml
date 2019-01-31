@@ -43,7 +43,7 @@ steps:
 
 - pwsh: |
     dotnet tool install dotnet-reportgenerator-globaltool --tool-path $(System.DefaultWorkingDirectory)/tools
-    $(System.DefaultWorkingDirectory)/tools/reportgenerator "-reports:$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml" "-targetdir:$(build.artifactstagingdirectory)/reports" -reporttypes:Cobertura;HtmlInline_AzurePipelines_Dark
+    $(System.DefaultWorkingDirectory)/tools/reportgenerator "-reports:$(System.DefaultWorkingDirectory)/src/**/*.UnitTests/coverage.cobertura.xml" "-targetdir:$(build.artifactstagingdirectory)/reports" "-reporttypes:Cobertura;HtmlInline_AzurePipelines_Dark"
   displayName: 'Code Coverage Report Generator'
 
 - task: PublishCodeCoverageResults@1
