@@ -46,7 +46,7 @@ namespace SFA.DAS.SecureMessageService.Web.Controllers
             ViewBag.MessageExists = messageExists;
             logger.LogInformation(1, $"Message {key} exists: {messageExists.ToString()}");
 
-            return View();
+            return View("ConfirmViewMessage");
         }
 
 
