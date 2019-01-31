@@ -57,7 +57,7 @@ steps:
   displayName: 'Check build quality'
   inputs:
     checkCoverage: true
-    coverageType: blocks
+    coverageType: lines
     coverageDeltaType: percentage
     buildConfiguration: '$(buildConfiguration)'
 
