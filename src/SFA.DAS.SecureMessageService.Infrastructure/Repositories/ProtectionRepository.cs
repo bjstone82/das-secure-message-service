@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using SFA.DAS.SecureMessageService.Core.IRepositories;
 
-namespace SFA.DAS.SecureMessageService.Infrastructure
+namespace SFA.DAS.SecureMessageService.Infrastructure.Repositories
 {
     public class ProtectionRepository : IProtectionRepository
     {
-        private readonly IDataProtector dataProtector;
+        private readonly IDasDataProtector dataProtector;
 
-        public ProtectionRepository(IDataProtectionProvider _provider)
+        public ProtectionRepository(IDasDataProtector _dataProtector)
         {
-            dataProtector = _provider.CreateProtector("SFA.DAS.SecureMessageService.Infrastructure.Repositories.ProtectionRepository");
+            dataProtector = _dataProtector;
         }
 
         public string Protect(string message)
