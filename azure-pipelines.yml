@@ -57,9 +57,10 @@ steps:
   displayName: 'Check build quality'
   inputs:
     checkCoverage: true
-    coverageType: lines
+    coverageType: blocks
     coverageDeltaType: percentage
     buildConfiguration: '$(buildConfiguration)'
+
     
 - task: DotNetCoreCLI@2
   displayName: 'Publish'
