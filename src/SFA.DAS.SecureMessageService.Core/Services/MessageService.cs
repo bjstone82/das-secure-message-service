@@ -59,7 +59,6 @@ namespace SFA.DAS.SecureMessageService.Core.Services
         {
             try
             {
-
                 // Retrieve protected string from cache
                 var protectedMessage = await cacheRepository.RetrieveAsync(key);
 

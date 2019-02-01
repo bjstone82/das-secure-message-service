@@ -11,78 +11,89 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
     [TestFixture]
     public class CacheRepositoryTests
     {
-        private Mock<IDasDistributedCache> _cache;
-        private CacheRepository _repository;
+        private Mock<IDasDistributedCache> cache;
+        private CacheRepository repository;
         private string message = "test message";
         private string key = "24a8d272-0bd5-422d-80f1-09fc21dc7f7f";
         private int ttl = 1;
+        private DistributedCacheEntryOptions timeSpan;
 
         [SetUp]
         public void Setup()
         {
-            _cache = new Mock<IDasDistributedCache>();
-                    
-            var timeSpan = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(ttl)
-            };
-
-            _cache.Setup(c => c.SetStringAsync(key, message, timeSpan));
-            _repository = new CacheRepository(_cache.Object);
+            cache = new Mock<IDasDistributedCache>();
+            repository = new CacheRepository(cache.Object);
         }
 
         [Test]
-        public async Task Cache_RetrevieReturnsAMessage()
+        public async Task SaveAsync_CompletesSuccesfully()
         {
             // Arrange
-            _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(message);
+            cache.Setup(c => c.SetStringAsync(key, message, It.IsAny<DistributedCacheEntryOptions>())).Returns(Task.FromResult(false));
 
             // Act
-            var result = await _repository.RetrieveAsync(key);
+            await repository.SaveAsync(key, message, ttl);
+
+            // Assert
+            cache.VerifyAll();
+        }
+
+        [Test]
+        public async Task RetrieveAsync_ReturnsAValidMessage()
+        {
+            // Arrange
+            cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(message);
+            cache.Setup(c => c.RemoveAsync(key)).Returns(Task.FromResult(false));
+
+            // Act
+            var result = await repository.RetrieveAsync(key);
 
             // Assert
             Assert.AreEqual(message, result);
+            cache.VerifyAll();
         }
 
         [Test]
-        public async Task Cache_RetrevieDoesNotReturnAMessage()
+        public async Task RetrieveAsync_DoesNotReturnAValidMessage()
         {
             // Arrange
-            _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync("");
+            cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(default(string));
+            cache.Setup(c => c.RemoveAsync(key)).Returns(Task.FromResult(false));
 
             // Act
-            var result = await _repository.RetrieveAsync(key);
-
-            // TODO: Need to test removal?
+            var result = await repository.RetrieveAsync(key);
 
             // Assert
-            Assert.AreEqual(string.Empty, result);
+            Assert.AreEqual(null, result);
+            cache.VerifyAll();
         }
 
         [Test]
-        public async Task Cache_TestIfMessageExistsInCache()
+        public async Task TestAsync_ReturnTrueIfMessageExistsInCache()
         {
             // Arrange
-            _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(message);
+            cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(message);
 
             // Act
-            var result = await _repository.TestAsync(key);
+            var result = await repository.TestAsync(key);
 
             // Assert
             Assert.IsTrue(result);
+            cache.VerifyAll();
         }
 
         [Test]
-        public async Task Cache_TestIfMessageDoesNotExistsInCache()
+        public async Task TestAsync_ReturnFalseIfMessageDoesNotExistsInCache()
         {
             // Arrange
-            _cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(default(String));
+            cache.Setup(c => c.GetStringAsync(key)).ReturnsAsync(default(String));
 
             // Act
-            var result = await _repository.TestAsync(key);
+            var result = await repository.TestAsync(key);
 
             // Assert
             Assert.IsFalse(result);
+            cache.VerifyAll();
         }
     }
 

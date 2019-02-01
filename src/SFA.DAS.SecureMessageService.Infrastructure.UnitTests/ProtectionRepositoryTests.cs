@@ -25,7 +25,7 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
         }
 
         [Test]
-        public void ProtectsAMessage()
+        public void Protect_ProtectsAMessage()
         {
             // Arrange
             dataProtector.Setup(c => c.Protect(unprotectedMessage)).Returns(protectedMessage);
@@ -35,10 +35,11 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
 
             // Assert
             Assert.AreEqual(protectedMessage, result);
+            dataProtector.VerifyAll();
         }
 
         [Test]
-        public void FailsToProtectAMessageAndThrows()
+        public void Protect_ThrowsAnException()
         {
             // Arrange
             dataProtector.Setup(c => c.Protect(unprotectedMessage)).Throws<Exception>();
@@ -48,7 +49,7 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
         }
 
         [Test]
-        public void UnprotectsAMessage()
+        public void Unprotect_UnprotectsAMessage()
         {
             // Arrange
             dataProtector.Setup(c => c.Unprotect(protectedMessage)).Returns(unprotectedMessage);
@@ -58,10 +59,11 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
 
             // Assert
             Assert.AreEqual(unprotectedMessage, result);
+            dataProtector.VerifyAll();
         }
 
         [Test]
-        public void FailsToUnprotectAMessageAndThrows()
+        public void Unprotect_ThrowsAnException()
         {
             // Arrange
             dataProtector.Setup(c => c.Unprotect(protectedMessage)).Throws<Exception>();
@@ -69,6 +71,5 @@ namespace SFA.DAS.SecureMessageService.Infrastructure.UnitTests
             // Assert
             Assert.Throws<Exception>(() => repository.Unprotect(protectedMessage));
         }
-
     }
 }
